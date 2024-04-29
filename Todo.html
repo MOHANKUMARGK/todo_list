@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TODO</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col d-flex justify-content-center text-danger bg-light">
+        <h1>TODO</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col mt-5 ms-5 mb-3">
+        <input type="text" placeholder="Enter Text" value="" id="msg">
+        <button class="btn btn-primary ms-1 " id="submit">ADD</button>
+      </div>
+    </div>
+    <hr>
+    <div class="row">
+      <div class="col d-flex justify-content-between">
+        <h4><div> Total Count: <b><span id="count">0</span></b></div></h4>
+        <button class="btn btn-danger" id="clear">CLEAR ALL</button>
+      </div>
+    </div>
+    <hr>
+    
+    <div class="row d-flex m-3" id="body">
+      <!-- <div class="col col-md-3">
+        <div class="card bg-dark text-white">
+          <div class="card-body">
+            <p>Mohan</p>
+          </div>
+          <div class="card-footer d-flex justify-content-between">
+            <button class="btn btn-primary">Edit</button>
+            <button class="btn btn-danger">Delete</button>
+          </div>
+        </div>
+      </div> -->
+    </div>
+
+  </div>
+  
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <script>
+    let msg=document.getElementById('msg')
+    let submit=document.getElementById('submit')
+    let count=document.getElementById('count')
+    let clear=document.getElementById('clear')
+    let body=document.getElementById('body')
+    isEdit=''
+    let gArr=[]
+    cardprint()
+    function setData(data) {
+      localStorage.setItem('todo', JSON.stringify(data))
+    }
+    // this for the reading
+    function getData() {
+      gArr = localStorage.getItem('todo') ? JSON.parse(localStorage.getItem('todo')) : []
+    }
+    submit.addEventListener('click',todoHandler)
+
+    // todoHandler
+    function todoHandler(){
+      if(!msg.value){
+        alert('please enter text')
+      }
+      else{
+        if(isEdit){
+          let newArr=gArr.map((item)=>{
+            if(item.id==isEdit.id){
+              let obj={
+                id:item.id,text:msg.value
+              }
+              return obj
+            }
+            else{
+              return item
+            }
+          })
+          gArr=newArr
+          isEdit=''
+          submit.innerText="ADD"
+        }
+        else{
+          let obj={
+          id:Math.trunc(Math.random()*100000),
+          text:msg.value
+        }
+        console.log(obj);
+        gArr.unshift(obj)
+      }
+      setData(gArr)
+      cardprint()
+      msg.value=''
+        }
+     
+    }
+
+    // cardprint
+
+    function cardprint(){
+      let str=''
+      let todoLength=gArr.length
+      if(gArr.length==0){
+        str+='<h4>No Data</h4>'
+      }
+      else{
+        gArr.forEach((item)=>{
+          str+= `   <div class="col col-md-3 m-3">
+        <div class="card bg-dark text-white">
+          <div class="card-body">
+            <p>${item.text}</p>
+          </div>
+          <div class="card-footer d-flex justify-content-between">
+            <button class="btn btn-primary" onclick='editHandler(${item.id})'>Edit</button>
+            <button class="btn btn-danger" onclick='deleteHandler(${item.id})'>Delete</button>
+          </div>
+        </div>
+      </div> `
+        })
+      }
+      body.innerHTML=str
+      count.innerText=todoLength
+    }
+
+    // deleteHandler
+    function deleteHandler(id){
+      gArr=gArr.filter((item)=>{
+        return item.id!==id
+      })
+      setData(gArr)
+      cardprint()
+    }
+
+    //clear
+    clear.addEventListener('click',()=>{
+      gArr=[]
+      setData(gArr)
+      cardprint()
+    })
+
+    // editHandler
+    function editHandler(id){
+      let findData=gArr.find((item)=>{
+        return item.id==id
+      })
+      isEdit=findData
+      msg.value=findData.text
+      submit.innerText='UPDATE'
+    }
+
+  
+
+
+
+
+
+
+
+  </script>
+</body>
+</html>
